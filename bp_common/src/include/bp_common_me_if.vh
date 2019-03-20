@@ -73,31 +73,19 @@
  */
 
 /*
- * bp_lce_cce_req_type_e specifies whether the containing message is related to a read or write
- * cache miss request from and LCE.
+ * bp_lce_cce_req_type_e specifies the type of request the LCE is making.
  */
-typedef enum bit 
+typedef enum bit [2:0]
 {
-  e_lce_req_type_rd          = 1'b0 // Read-miss
-  , e_lce_req_type_wr        = 1'b1 // Write-miss
+  e_lce_req_type_rd              = 3'b000 // Read-miss
+  , e_lce_req_type_non_excl_rd   = 3'b001 // Read-miss, request block in non-exclusive size
+  , e_lce_req_type_wr            = 3'b010 // Write-miss
+  , e_lce_req_type_nc_read       = 3'b011 // Non-cacheable Load
+  , e_lce_req_type_nc_write      = 3'b100 // Non-cacheable Store
+  , e_lce_req_type_flush         = 3'b101 // Cache line flush
 } bp_lce_cce_req_type_e;
 
 `define bp_lce_cce_req_type_width $bits(bp_lce_cce_req_type_e)
-
-/*
- * bp_lce_cce_req_non_excl_e specifies whether the requesting LCE would like a read-miss request
- * to be returned in an exclusive coherence state if possible or not. An I$, for example, should
- * set this bit to indicate that there is no benefit in the CCE granting a cache block in the E
- * state as opposed to the S state in a MESI protocol. The CCE treats this bit as a hint, and is
- * not required to follow it.
- */
-typedef enum bit 
-{
-  e_lce_req_excl             = 1'b0 // exclusive cache line request (read-only, exclusive request)
-  , e_lce_req_not_excl       = 1'b1 // non-exclusive cache line request (read-only, shared request)
-} bp_lce_cce_req_non_excl_e;
-
-`define bp_lce_cce_req_non_excl_width $bits(bp_lce_cce_req_non_excl_e)
 
 /*
  * bp_lce_cce_lru_dirty_e specifies whether the LRU way in an LCE request (bp_lce_cce_req_s)
@@ -111,14 +99,10 @@ typedef enum bit
 
 `define bp_lce_cce_lru_dirty_width $bits(bp_lce_cce_lru_dirty_e)
 
-/*
- * bp_lce_cce_req_non_cacheable_e specifies whether this load or store request is for a
- * non-cacheable address.
- */
 typedef enum bit
 {
-  e_lce_req_cacheable         = 1'b0 // Cacheable request
-  , e_lce_req_non_cacheable   = 1'b1 // Non-cacheable request
+  e_lce_req_cacheable        = 1'b0
+  ,e_lce_req_non_cacheable   = 1'b1
 } bp_lce_cce_req_non_cacheable_e;
 
 `define bp_lce_cce_req_non_cacheable_width $bits(bp_lce_cce_req_non_cacheable_e)
@@ -137,6 +121,23 @@ typedef enum bit [1:0]
 
 `define bp_lce_cce_nc_req_size_width $bits(bp_lce_cce_nc_req_size_e)
 
+`define declare_bp_lce_cce_req_aux_u(lce_assoc_mp)              \
+  typedef struct packed                                         \
+  {                                                             \
+    logic [`BSG_SAFE_CLOG2(lce_assoc_mp)-1:0]    lru_way_id;    \
+    bp_lce_cce_lru_dirty_e                       lru_dirty;     \
+  }  bp_lce_cce_req_lru_s;                                      \
+                                                                \
+  typedef union packed                                          \
+  {                                                             \
+    bp_lce_cce_req_lru_s                         lru_info;      \
+    bp_lce_cce_nc_req_size_e                     nc_req_size;   \
+  }  bp_lce_cce_req_aux_u;
+
+`define bp_lce_cce_req_aux_width(lce_assoc_mp) \
+  (`BSG_MAX(`BSG_SAFE_CLOG2(lce_assoc_mp)+`bp_lce_cce_lru_dirty_width \
+            ,`bp_lce_cce_nc_req_size_width))
+ 
 /*
  * bp_lce_cce_req_s defines an LCE request sent by an LCE to a CCE on a cache miss. An LCE enters
  *   a Stall state after sending a request, and it may not send another request until it is
@@ -150,19 +151,16 @@ typedef enum bit [1:0]
  * lru_way_id indicates the way within the target set that will be used to fill the miss in to
  * lru_dirty indicates if the LRU way was dirty or clean when the miss request was sent
  */
-`define declare_bp_lce_cce_req_s(num_cce_mp, num_lce_mp, addr_width_mp, lce_assoc_mp, data_width_mp) \
+`define declare_bp_lce_cce_req_s(num_lce_mp, addr_width_mp, lce_assoc_mp, data_width_mp) \
+  `declare_bp_lce_cce_req_aux_u(lce_assoc_mp)                   \
   typedef struct packed                                         \
   {                                                             \
     logic [`BSG_SAFE_CLOG2(num_cce_mp)-1:0]      dst_id;        \
     logic [`BSG_SAFE_CLOG2(num_lce_mp)-1:0]      src_id;        \
     logic [data_width_mp-1:0]                    data;          \
     bp_lce_cce_req_type_e                        msg_type;      \
-    bp_lce_cce_req_non_excl_e                    non_exclusive; \
     logic [addr_width_mp-1:0]                    addr;          \
-    logic [`BSG_SAFE_CLOG2(lce_assoc_mp)-1:0]    lru_way_id;    \
-    bp_lce_cce_lru_dirty_e                       lru_dirty;     \
-    bp_lce_cce_req_non_cacheable_e               non_cacheable; \
-    bp_lce_cce_nc_req_size_e                     nc_size;       \
+    bp_lce_cce_req_aux_u                         aux_info;      \
   }  bp_lce_cce_req_s
 
 /*
@@ -198,38 +196,26 @@ typedef enum bit [2:0]
 `define bp_cce_lce_cmd_type_width $bits(bp_cce_lce_cmd_type_e)
 
 /*
- * bp_cce_coh_mesi_e defines the coherence states for a MESI protocol
- * e_MESI_I means the block is invalid and the LCE does not have read or write permissions
- * e_MESI_S means the block is valid and the LCE has read permissions
- * e_MESI_E means the block is valid and the LCE has read and write permissions. The block may or
+ * bp_cce_coh_st_e defines the coherence states that may be available in a BlackParrot processor
+ * e_coh_st_I means the block is invalid and the LCE does not have read or write permissions
+ * e_coh_st_S means the block is valid and the LCE has read permissions
+ * e_coh_st_E means the block is valid and the LCE has read and write permissions. The block may or
  *   may not be dirty in the LCE.
- * e_MESI_M has the same meaning as e_MESI_E, but the CCE knows the block is dirty
+ * e_coh_st_M has the same meaning as e_MESI_E, but the CCE knows the block is dirty
+ * e_coh_st_O
+ * e_coh_st_F
  */
-typedef enum bit [1:0] 
+typedef enum bit [2:0] 
 {
-  e_MESI_I                   = 2'b00
-  ,e_MESI_S                  = 2'b01
-  ,e_MESI_E                  = 2'b10
-  ,e_MESI_M                  = 2'b11
-} bp_cce_coh_mesi_e;
+  e_coh_st_I                   = 3'b000
+  ,e_coh_st_S                  = 3'b001
+  ,e_coh_st_E                  = 3'b010
+  ,e_coh_st_M                  = 3'b011
+  ,e_coh_st_O                  = 3'b100
+  ,e_coh_st_F                  = 3'b101
+} bp_cce_coh_st_e;
 
-/*
- * bp_cce_coh_vi_e defines the coherence states for a Valid/Invalid style protocol.
- * In VI, the V state is equivalent to e_MESI_E, and I is the same as e_MESI_I.
- */
-typedef enum bit [1:0] 
-{
-  e_VI_I                     = 2'b00
-  ,e_VI_V                    = 2'b10
-} bp_cce_coh_vi_e;
-
-typedef union packed 
-{
-  bp_cce_coh_vi_e            vi;
-  bp_cce_coh_mesi_e          mesi;
-}  bp_cce_coh_u;
-
-`define bp_cce_coh_bits $bits(bp_cce_coh_u)
+`define bp_cce_coh_bits $bits(bp_cce_coh_st_e)
 
 /*
  * bp_cce_lce_cmd_s defines a command sent by a CCE to and LCE
@@ -242,15 +228,14 @@ typedef union packed
  * target is the LCE that will receive a transfer for a transfer command
  * target_way_id is the way within the target LCE's set (computed from addr) to fill the data in to
  */
-`define declare_bp_cce_lce_cmd_s(num_cce_mp, num_lce_mp, addr_width_mp, lce_assoc_mp) \
+`define declare_bp_cce_lce_cmd_s(num_lce_mp, addr_width_mp, lce_assoc_mp) \
   typedef struct packed                                         \
   {                                                             \
     logic [`BSG_SAFE_CLOG2(num_lce_mp)-1:0]      dst_id;        \
-    logic [`BSG_SAFE_CLOG2(num_cce_mp)-1:0]      src_id;        \
     bp_cce_lce_cmd_type_e                        msg_type;      \
     logic [addr_width_mp-1:0]                    addr;          \
     logic [`BSG_SAFE_CLOG2(lce_assoc_mp)-1:0]    way_id;        \
-    logic [`bp_cce_coh_bits-1:0]                 state;         \
+    bp_cce_coh_st_e                              state;         \
     logic [`BSG_SAFE_CLOG2(num_lce_mp)-1:0]      target;        \
     logic [`BSG_SAFE_CLOG2(lce_assoc_mp)-1:0]    target_way_id; \
   }  bp_cce_lce_cmd_s
@@ -320,10 +305,9 @@ typedef enum bit [1:0]
  *
  * NOTE: addr is not valid for e_lce_cce_sync_ack
  */
-`define declare_bp_lce_cce_resp_s(num_cce_mp, num_lce_mp, addr_width_mp) \
+`define declare_bp_lce_cce_resp_s(num_lce_mp, addr_width_mp) \
   typedef struct packed                                    \
   {                                                        \
-    logic [`BSG_SAFE_CLOG2(num_cce_mp)-1:0]      dst_id;   \
     logic [`BSG_SAFE_CLOG2(num_lce_mp)-1:0]      src_id;   \
     bp_lce_cce_ack_type_e                        msg_type; \
     logic [addr_width_mp-1:0]                    addr;     \
@@ -345,7 +329,7 @@ typedef enum bit [1:0]
  *   clean. The data field should be 0 and is invalid.
  */
 
-typedef enum logic
+typedef enum bit
 {
   e_lce_resp_wb              = 1'b0  // Normal Writeback Response (full data)
   ,e_lce_resp_null_wb        = 1'b1  // Null Writeback Response (no data)
@@ -361,11 +345,10 @@ typedef enum logic
  * addr is the memory address of the cache block being written back
  * data is the cache block data (if this is not a null writeback)
  */
-`define declare_bp_lce_cce_data_resp_s(num_cce_mp, num_lce_mp, addr_width_mp, data_width_mp) \
+`define declare_bp_lce_cce_data_resp_s(num_lce_mp, addr_width_mp, data_width_mp) \
   typedef struct packed                                    \
   {                                                        \
     logic [data_width_mp-1:0]                    data;     \
-    logic [`BSG_SAFE_CLOG2(num_cce_mp)-1:0]      dst_id;   \
     logic [`BSG_SAFE_CLOG2(num_lce_mp)-1:0]      src_id;   \
     bp_lce_cce_resp_msg_type_e                   msg_type; \
     logic [addr_width_mp-1:0]                    addr;     \
@@ -595,29 +578,27 @@ typedef enum logic
  */
 
 // CCE-LCE Interface
-`define bp_lce_cce_req_width(num_cce_mp, num_lce_mp, addr_width_mp, lce_assoc_mp, data_width_mp) \
-  (`BSG_SAFE_CLOG2(num_cce_mp)+`BSG_SAFE_CLOG2(num_lce_mp)+`bp_lce_cce_req_type_width \
-   +`bp_lce_cce_req_non_excl_width+addr_width_mp+`BSG_SAFE_CLOG2(lce_assoc_mp) \
-   +`bp_lce_cce_lru_dirty_width+`bp_lce_cce_req_non_cacheable_width+`bp_lce_cce_nc_req_size_width \
-   +data_width_mp)
-
-`define bp_cce_lce_cmd_width(num_cce_mp, num_lce_mp, addr_width_mp, lce_assoc_mp) \
-  (`BSG_SAFE_CLOG2(num_cce_mp)+`BSG_SAFE_CLOG2(num_lce_mp)+`bp_cce_lce_cmd_type_width \
+`define bp_lce_cce_req_width(num_lce_mp, addr_width_mp, lce_assoc_mp, data_width_mp) \
+  (`BSG_SAFE_CLOG2(num_lce_mp)+`bp_lce_cce_req_type_width+addr_width_mp \
+   +`bp_lce_cce_req_aux_width(lce_assoc_mp)+data_width_mp)
+   
+`define bp_cce_lce_cmd_width(num_lce_mp, addr_width_mp, lce_assoc_mp) \
+  (`BSG_SAFE_CLOG2(num_lce_mp)+`bp_cce_lce_cmd_type_width \
    +addr_width_mp+(2*`BSG_SAFE_CLOG2(lce_assoc_mp))+`bp_cce_coh_bits+`BSG_SAFE_CLOG2(num_lce_mp))
 
 `define bp_lce_data_cmd_width(num_lce_mp, data_width_mp, lce_assoc_mp) \
   (`BSG_SAFE_CLOG2(num_lce_mp)+`bp_lce_data_cmd_type_width+`BSG_SAFE_CLOG2(lce_assoc_mp) \
    +data_width_mp)
 
-`define bp_lce_cce_resp_width(num_cce_mp, num_lce_mp, addr_width_mp) \
-  (`BSG_SAFE_CLOG2(num_cce_mp)+`BSG_SAFE_CLOG2(num_lce_mp)+`bp_lce_cce_ack_type_width+addr_width_mp)
+`define bp_lce_cce_resp_width(num_lce_mp, addr_width_mp) \
+  (`BSG_SAFE_CLOG2(num_lce_mp)+`bp_lce_cce_ack_type_width+addr_width_mp)
 
 `define bp_lce_lce_tr_resp_width(num_lce_mp, addr_width_mp, data_width_mp, lce_assoc_mp) \
   (`BSG_SAFE_CLOG2(num_lce_mp)+`BSG_SAFE_CLOG2(num_lce_mp)+`BSG_SAFE_CLOG2(lce_assoc_mp) \
     +addr_width_mp+data_width_mp)
 
-`define bp_lce_cce_data_resp_width(num_cce_mp, num_lce_mp, addr_width_mp, data_width_mp) \
-  (`BSG_SAFE_CLOG2(num_cce_mp)+`BSG_SAFE_CLOG2(num_lce_mp)+`bp_lce_cce_resp_msg_type_width \
+`define bp_lce_cce_data_resp_width(num_lce_mp, addr_width_mp, data_width_mp) \
+  (`BSG_SAFE_CLOG2(num_lce_mp)+`bp_lce_cce_wb_resp_type_width \
    +addr_width_mp+data_width_mp)
 
 // CCE-MEM Interface
