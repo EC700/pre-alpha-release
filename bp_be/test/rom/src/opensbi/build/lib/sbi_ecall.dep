@@ -1,0 +1,10 @@
+/home/katielim/blackparrot/opensbi/build/lib/sbi_ecall.o: /home/katielim/blackparrot/opensbi/lib/sbi_ecall.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_console.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ecall.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ecall_interface.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_error.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ipi.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_system.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_timer.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_trap.h

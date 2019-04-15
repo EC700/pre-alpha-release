@@ -1,0 +1,7 @@
+/home/katielim/blackparrot/opensbi/build/platform/qemu/sifive_u/firmware/payloads/test_head.o: \
+ /home/katielim/blackparrot/opensbi/firmware/payloads/test_head.S \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h
+/home/katielim/blackparrot/opensbi/build/platform/qemu/sifive_u/firmware/payloads/test_main.o: \
+ /home/katielim/blackparrot/opensbi/firmware/payloads/test_main.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ecall_interface.h

@@ -1,0 +1,8 @@
+/home/katielim/blackparrot/opensbi/build/platform/qemu/virt/firmware/fw_payload.o: /home/katielim/blackparrot/opensbi/firmware/fw_payload.S \
+ /home/katielim/blackparrot/opensbi/firmware/fw_base.S \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_asm.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_platform.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_scratch.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_trap.h

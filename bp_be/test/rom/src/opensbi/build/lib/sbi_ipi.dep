@@ -1,0 +1,18 @@
+/home/katielim/blackparrot/opensbi/build/lib/sbi_ipi.o: /home/katielim/blackparrot/opensbi/lib/sbi_ipi.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_asm.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_barrier.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_atomic.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_unpriv.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_bits.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_fifo.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_locks.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_hart.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_bitops.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ipi.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_platform.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_scratch.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_timer.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/string.h

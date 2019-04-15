@@ -1,0 +1,11 @@
+/home/katielim/blackparrot/opensbi/build/lib/sbi_emulate_csr.o: \
+ /home/katielim/blackparrot/opensbi/lib/sbi_emulate_csr.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_asm.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_bits.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_console.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_emulate_csr.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_error.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_timer.h

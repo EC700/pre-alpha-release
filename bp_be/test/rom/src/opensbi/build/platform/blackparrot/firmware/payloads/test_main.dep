@@ -1,0 +1,3 @@
+/home/katielim/blackparrot/opensbi/build/platform/blackparrot/firmware/payloads/test_main.o: \
+ /home/katielim/blackparrot/opensbi/firmware/payloads/test_main.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ecall_interface.h

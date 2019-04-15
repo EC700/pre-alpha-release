@@ -1,0 +1,6 @@
+/home/katielim/blackparrot/opensbi/build/lib/sbi_fifo.o: /home/katielim/blackparrot/opensbi/lib/sbi_fifo.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_locks.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_error.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_fifo.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/string.h

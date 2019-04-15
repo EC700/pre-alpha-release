@@ -1,0 +1,5 @@
+/home/katielim/blackparrot/opensbi/build/lib/riscv_asm.o: /home/katielim/blackparrot/opensbi/lib/riscv_asm.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_asm.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_error.h

@@ -1,0 +1,15 @@
+/home/katielim/blackparrot/opensbi/build/lib/sbi_hart.o: /home/katielim/blackparrot/opensbi/lib/sbi_hart.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_asm.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_barrier.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_fp.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_locks.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_bits.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_console.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_error.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_hart.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_platform.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_scratch.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ipi.h

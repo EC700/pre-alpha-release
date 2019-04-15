@@ -1,0 +1,7 @@
+/home/katielim/blackparrot/opensbi/build/platform/common/sys/clint.o: /home/katielim/blackparrot/opensbi/platform/common/sys/clint.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_io.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_barrier.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_atomic.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_hart.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/sys/clint.h

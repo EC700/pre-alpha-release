@@ -1,0 +1,8 @@
+/home/katielim/blackparrot/opensbi/build/lib/riscv_atomic.o: /home/katielim/blackparrot/opensbi/lib/riscv_atomic.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_asm.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_atomic.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_barrier.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_bits.h

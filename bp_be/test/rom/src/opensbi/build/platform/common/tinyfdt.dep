@@ -1,0 +1,4 @@
+/home/katielim/blackparrot/opensbi/build/platform/common/tinyfdt.o: /home/katielim/blackparrot/opensbi/platform/common/tinyfdt.c \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/string.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/tinyfdt.h

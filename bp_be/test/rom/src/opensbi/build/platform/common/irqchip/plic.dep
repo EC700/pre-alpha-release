@@ -1,0 +1,10 @@
+/home/katielim/blackparrot/opensbi/build/platform/common/irqchip/plic.o: /home/katielim/blackparrot/opensbi/platform/common/irqchip/plic.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_io.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_barrier.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_console.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/string.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/tinyfdt.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/irqchip/plic.h

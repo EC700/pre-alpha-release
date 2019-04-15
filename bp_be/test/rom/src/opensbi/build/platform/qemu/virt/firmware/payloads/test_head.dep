@@ -1,0 +1,4 @@
+/home/katielim/blackparrot/opensbi/build/platform/qemu/virt/firmware/payloads/test_head.o: \
+ /home/katielim/blackparrot/opensbi/firmware/payloads/test_head.S \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h

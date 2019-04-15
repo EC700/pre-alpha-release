@@ -1,0 +1,3 @@
+/home/katielim/blackparrot/opensbi/build/lib/riscv_locks.o: /home/katielim/blackparrot/opensbi/lib/riscv_locks.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_barrier.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_locks.h

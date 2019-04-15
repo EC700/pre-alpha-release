@@ -1,0 +1,12 @@
+/home/katielim/blackparrot/opensbi/build/platform/blackparrot/platform.o: \
+ /home/katielim/blackparrot/opensbi/platform/blackparrot/platform.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_encoding.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_const.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_platform.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_scratch.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_asm.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_ipi.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/irqchip/plic.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/serial/uart8250.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/sys/clint.h

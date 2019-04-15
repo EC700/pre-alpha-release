@@ -1,0 +1,6 @@
+/home/katielim/blackparrot/opensbi/build/platform/common/serial/uart8250.o: \
+ /home/katielim/blackparrot/opensbi/platform/common/serial/uart8250.c \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_io.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/riscv_barrier.h \
+ /home/katielim/blackparrot/opensbi/include/sbi/sbi_types.h \
+ /home/katielim/blackparrot/opensbi/platform/common/include/plat/serial/uart8250.h
