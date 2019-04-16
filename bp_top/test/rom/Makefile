@@ -10,7 +10,6 @@ ROM_DIR        = $(TEST_DIR)/rom/v
 
 HEX2BIN        = $(BP_TOP_DIR)/software/py/hex2binascii.py
 SPIKE2TR       = $(BP_TOP_DIR)/software/py/spike2tr.py
-PTGEN          = $(BP_TOP_DIR)/software/py/ptgen.py
 BSG_ROM_GEN    = $(BSG_IP_CORES_DIR)/bsg_mem/bsg_ascii_to_rom.py
 RISCV_ELF2HEX  = elf2hex
 RISCV_SIM      = $(SPIKE_MOD_PATH)/spike
@@ -22,19 +21,18 @@ include Makefile.frag
 
 all: isa benchmarks demos
 
-isa: isa_pt isa_elf isa_rom clean
-benchmarks: benchmarks_pt benchmarks_elf benchmarks_rom clean
-demos: demos_elf demos_rom clean
-
-isa_pt: 
-	python $(PTGEN) src/isa/pt.S 0x80009000 0x80000000 4
-
-benchmarks_pt: 
-	python $(PTGEN) src/benchmarks/pt.S 0x80009000 0x80000000,0x80008000 4,1
+isa: isa_elf isa_rom
+isa_v: isa_v_elf isa_v_rom
+benchmarks: benchmarks_elf benchmarks_rom
+demos: demos_elf demos_rom
 
 isa_elf:
 	make -C src/isa
-	mv src/isa/*.elf .
+	mv src/isa/rv64ui_p*.elf .
+
+isa_v_elf:
+	make -C src/isa
+	mv src/isa/rv64ui_v*.elf .
 
 benchmarks_elf:
 	make -C src/benchmarks
@@ -47,6 +45,10 @@ demos_elf:
 isa_rom: SPIKE_OPTS := 
 isa_rom: $(foreach x, $(subst -,_,$(RV64_TESTS)), $(x).v)
 isa_rom: $(foreach x, $(subst -,_,$(RV64_TESTS)), $(x).trace)
+
+isa_v_rom: SPIKE_OPTS := --pc=0x80000000
+isa_v_rom: $(foreach x, $(subst -,_,$(RV64_V_TESTS)), $(x).v)
+isa_v_rom: $(foreach x, $(subst -,_,$(RV64_V_TESTS)), $(x).trace)
 
 benchmarks_rom: SPIKE_OPTS := --pc=0x80000124 --end-pc=0x800001b0
 benchmarks_rom: $(foreach x, $(subst -,_,$(RV64_BENCHMARKS)), $(x).v)
@@ -67,9 +69,9 @@ demos_rom: $(foreach x, $(subst -,_,$(BP_DEMOS)), $(x).fake_trace)
 %.bin: %.hex
 	python $(HEX2BIN) $< 512 > $@
 
-# 64 kB ROM with a 0x80000000 offset
+# 32 kB ROM with a 0x80000124 offset
 %.hex:
-	$(RISCV_ELF2HEX) 16 65536 $*.elf 2147483648  > $@
+	$(RISCV_ELF2HEX) 16 32768 $*.elf 2147483648  > $@
 
 %.trace: 
 	$(RISCV_SIM) -l $(SPIKE_OPTS) $(basename $@).elf 2>$(basename $@).spike
