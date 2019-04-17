@@ -69,7 +69,7 @@ demos_rom: $(foreach x, $(subst -,_,$(BP_DEMOS)), $(x).fake_trace)
 %.bin: %.hex
 	python $(HEX2BIN) $< 512 > $@
 
-# 32 kB ROM with a 0x80000124 offset
+# 32 kB ROM with a 0x80000000 offset
 %.hex:
 	$(RISCV_ELF2HEX) 16 32768 $*.elf 2147483648  > $@
 
@@ -83,6 +83,8 @@ demos_rom: $(foreach x, $(subst -,_,$(BP_DEMOS)), $(x).fake_trace)
 
 clean:
 	rm -f *.elf
+	rm -f *.bin
+	rm -f *.hex
 	rm -f *.tr
 	rm -f *.spike
 
