@@ -146,15 +146,15 @@ void handle_fault(uintptr_t addr, uintptr_t cause)
   user_l3pt[addr/PGSIZE] = new_pte | PTE_A | PTE_D;
   flush_page(addr);
 
-  assert(user_mapping[addr/PGSIZE].addr == 0);
-  user_mapping[addr/PGSIZE] = *node;
+  //assert(user_mapping[addr/PGSIZE].addr == 0);
+  //user_mapping[addr/PGSIZE] = *node;
 
-  uintptr_t sstatus = set_csr(sstatus, SSTATUS_SUM);
-  memcpy((void*)addr, uva2kva(addr), PGSIZE);
-  write_csr(sstatus, sstatus);
+  //uintptr_t mstatus = set_csr(mstatus, MSTATUS_SUM);
+  //memcpy((void*)addr, (void*)(addr + DRAM_BASE), PGSIZE);
+  //write_csr(mstatus, mstatus);
 
-  user_l3pt[addr/PGSIZE] = new_pte;
-  flush_page(addr);
+  //user_l3pt[addr/PGSIZE] = new_pte;
+  //flush_page(addr);
 
   __builtin___clear_cache(0,0);
 }
@@ -222,8 +222,6 @@ void vm_boot(uintptr_t test_addr)
   l1pt[0] = ((pte_t)user_l2pt >> PGSHIFT << PTE_PPN_SHIFT) | PTE_V;
   // map kernel to uppermost megapage
 #if __riscv_xlen == 64
-  l1pt[PTES_PER_PT-1] = ((pte_t)kernel_l2pt >> PGSHIFT << PTE_PPN_SHIFT) | PTE_V;
-  kernel_l2pt[PTES_PER_PT-1] = (DRAM_BASE/RISCV_PGSIZE << PTE_PPN_SHIFT) | PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D;
   user_l2pt[0] = ((pte_t)user_l3pt >> PGSHIFT << PTE_PPN_SHIFT) | PTE_V;
   uintptr_t vm_choice = SATP_MODE_SV39;
 #else
@@ -236,33 +234,25 @@ void vm_boot(uintptr_t test_addr)
   // Set up PMPs if present, ignoring illegal instruction trap if not.
   uintptr_t pmpc = PMP_NAPOT | PMP_R | PMP_W | PMP_X;
   asm volatile ("la t0, 1f\n\t"
-                "csrrw t0, mtvec, t0\n\t"
+             //   "csrrw t0, mtvec, t0\n\t"
                 "csrw pmpaddr0, %1\n\t"
                 "csrw pmpcfg0, %0\n\t"
                 ".align 2\n\t"
                 "1:"
                 : : "r" (pmpc), "r" (-1UL) : "t0");
 
-  // set up supervisor trap handling
-  write_csr(stvec, pa2kva(trap_entry));
-  write_csr(sscratch, pa2kva(read_csr(mscratch)));
-  write_csr(medeleg,
-    (1 << CAUSE_USER_ECALL) |
-    (1 << CAUSE_FETCH_PAGE_FAULT) |
-    (1 << CAUSE_LOAD_PAGE_FAULT) |
-    (1 << CAUSE_STORE_PAGE_FAULT));
   // FPU on; accelerator on; allow supervisor access to user memory access
   write_csr(mstatus, MSTATUS_FS | MSTATUS_XS);
   write_csr(mie, 0);
 
-  random = 1 + (random % MAX_TEST_PAGES);
-  freelist_head = pa2kva((void*)&freelist_nodes[0]);
-  freelist_tail = pa2kva(&freelist_nodes[MAX_TEST_PAGES-1]);
+//  random = 1 + (random % MAX_TEST_PAGES);
+  freelist_head = ((void*)&freelist_nodes[0]);
+  freelist_tail = (&freelist_nodes[MAX_TEST_PAGES-1]);
   for (long i = 0; i < MAX_TEST_PAGES; i++)
   {
-    freelist_nodes[i].addr = DRAM_BASE + (MAX_TEST_PAGES + random)*PGSIZE;
-    freelist_nodes[i].next = pa2kva(&freelist_nodes[i+1]);
-    random = LFSR_NEXT(random);
+    freelist_nodes[i].addr = test_addr + i*PGSIZE;
+    freelist_nodes[i].next = (&freelist_nodes[i+1]);
+//    random = LFSR_NEXT(random);
   }
   freelist_nodes[MAX_TEST_PAGES-1].next = 0;
 

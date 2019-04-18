@@ -22,7 +22,7 @@ nmi_vector:
   j wtf
 
 trap_vector:
-  j wtf
+  j trap_entry
 
 init_regs:
   addi x1,  x0, 0
@@ -71,7 +71,7 @@ handle_reset:
   .globl  pop_tf
 pop_tf:
   LOAD  t0,33*REGBYTES(a0)
-  csrw  sepc,t0
+  csrw  mepc,t0
   LOAD  x1,1*REGBYTES(a0)
   LOAD  x2,2*REGBYTES(a0)
   LOAD  x3,3*REGBYTES(a0)
@@ -103,11 +103,11 @@ pop_tf:
   LOAD  x30,30*REGBYTES(a0)
   LOAD  x31,31*REGBYTES(a0)
   LOAD  a0,10*REGBYTES(a0)
-  sret
+  mret
 
   .global  trap_entry
 trap_entry:
-  csrrw sp, sscratch, sp
+  csrrw sp, mscratch, sp
 
   # save gprs
   STORE  x1,1*REGBYTES(sp)
@@ -141,17 +141,17 @@ trap_entry:
   STORE  x30,30*REGBYTES(sp)
   STORE  x31,31*REGBYTES(sp)
 
-  csrrw  t0,sscratch,sp
+  csrrw  t0,mscratch,sp
   STORE  t0,2*REGBYTES(sp)
 
   # get sr, epc, badvaddr, cause
-  csrr   t0,sstatus
+  csrr   t0,mstatus
   STORE  t0,32*REGBYTES(sp)
-  csrr   t0,sepc
+  csrr   t0,mepc
   STORE  t0,33*REGBYTES(sp)
-  csrr   t0,sbadaddr
+  csrr   t0,mbadaddr
   STORE  t0,34*REGBYTES(sp)
-  csrr   t0,scause
+  csrr   t0,mcause
   STORE  t0,35*REGBYTES(sp)
 
   move  a0, sp
