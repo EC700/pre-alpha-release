@@ -15,6 +15,7 @@ BSG_ROM_GEN    = $(BSG_IP_CORES_DIR)/bsg_mem/bsg_ascii_to_rom.py
 RISCV_ELF2HEX  = elf2hex
 RISCV_SIM      = $(SPIKE_MOD_PATH)/spike
 RISCV_OBJDUMP  = riscv64-unknown-elf-objdump -D -M no-aliases,numeric
+RISCV_OBJCOPY  = riscv64-unknown-elf-objcopy -O verilog
 RISCV_GCC_RAND  = riscv64-unknown-elf-gcc -nostdlib -nostartfiles -Wa,-march=rv64g 
 RISCV_GCC_RAND += -I${RANDOM_FLD}p/ -T${RANDOM_FLD}p/link.ld
 
@@ -51,6 +52,7 @@ isa_rom: $(foreach x, $(subst -,_,$(RV64_TESTS)), $(x).trace)
 benchmarks_rom: SPIKE_OPTS := --pc=0x80000124 --end-pc=0x800001b0
 benchmarks_rom: $(foreach x, $(subst -,_,$(RV64_BENCHMARKS)), $(x).v)
 benchmarks_rom: $(foreach x, $(subst -,_,$(RV64_BENCHMARKS)), $(x).trace)
+benchmarks_rom: $(foreach x, $(subst -,_,$(RV64_BENCHMARKS)), $(x).mem)
 
 demos_rom: $(foreach x, $(subst -,_,$(BP_DEMOS)), $(x).v)
 demos_rom: $(foreach x, $(subst -,_,$(BP_DEMOS)), $(x).fake_trace)
@@ -70,6 +72,9 @@ demos_rom: $(foreach x, $(subst -,_,$(BP_DEMOS)), $(x).fake_trace)
 # 64 kB ROM with a 0x80000000 offset
 %.hex:
 	$(RISCV_ELF2HEX) 16 65536 $*.elf 2147483648  > $@
+
+%.mem: 
+	$(RISCV_OBJCOPY) $*.elf $@
 
 %.trace: 
 	$(RISCV_SIM) -l $(SPIKE_OPTS) $(basename $@).elf 2>$(basename $@).spike

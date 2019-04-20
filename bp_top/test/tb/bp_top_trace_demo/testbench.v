@@ -106,7 +106,7 @@ logic [num_cce_p-1:0] mem_data_cmd_v, mem_data_cmd_yumi;
 
    for (genvar i = 0; i < num_cce_p; i++) 
      begin : rof1
-       bp_mem
+       bp_mem_dramsim2
         #(.num_lce_p(num_lce_p)
           ,.num_cce_p(num_cce_p)
           ,.paddr_width_p(paddr_width_p)
