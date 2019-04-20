@@ -429,7 +429,7 @@ always_comb
         mstatus_n.mie       = 1'b0;
 
         mepc_n              = exception_pc_i;
-        mtval_n             = exception_instr_i;
+        mtval_n             = exception_pc_i;
 
         mcause_n._interrupt = 1'b0;
         mcause_n.ecode      = exception_ecode_li;
@@ -470,7 +470,7 @@ always_comb
 assign mepc_o           = mepc_r;
 assign mtvec_o          = mtvec_r;
 assign satp_o           = satp_r;
-assign translation_en_o = (priv_mode_r < `RV64_PRIV_MODE_M) & (satp_r.mode == 4'h8);
+assign translation_en_o = (priv_mode_r < `RV64_PRIV_MODE_M) & (satp_r.mode == 1'b1);
 
 assign csr_cmd_ready_o = 1'b1;
 assign data_o          = dword_width_p'(csr_data_lo);

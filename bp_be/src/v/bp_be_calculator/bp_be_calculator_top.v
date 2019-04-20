@@ -82,7 +82,7 @@ module bp_be_calculator_top
    , localparam exception_width_lp      = `bp_be_exception_width
    , localparam mmu_cmd_width_lp        = `bp_be_mmu_cmd_width(vaddr_width_p)
    , localparam csr_cmd_width_lp        = `bp_be_csr_cmd_width
-   , localparam mem_resp_width_lp       = `bp_be_mem_resp_width
+   , localparam mem_resp_width_lp       = `bp_be_mem_resp_width(vaddr_width_p)
    , localparam dispatch_pkt_width_lp   = `bp_be_dispatch_pkt_width(vaddr_width_p, branch_metadata_fwd_width_p)
    , localparam pipe_stage_reg_width_lp = `bp_be_pipe_stage_reg_width(vaddr_width_p)
    , localparam fu_op_width_lp          = `bp_be_fu_op_width
@@ -196,6 +196,7 @@ logic [reg_data_width_lp-1:0] bypass_rs1 , bypass_rs2;
 logic illegal_instr_isd, csr_instr_isd;
 logic load_misaligned_mem1, store_misaligned_mem3;
 bp_be_mem_exception_s mem_exception_mem3;
+logic [vaddr_width_p-1:0] mem_badaddr_mem3;
 
 // Pipeline stage registers
 bp_be_pipe_stage_reg_s [pipe_stage_els_lp-1:0] calc_stage_r;
@@ -442,6 +443,7 @@ bp_be_pipe_mem
    ,.v_o(pipe_mem_v_lo)
    ,.data_o(pipe_mem_data_lo)
    ,.mem_exception_o(mem_exception_mem3)
+   ,.badaddr_o(mem_badaddr_mem3)
    );
 
 // Floating point pipe: 4 cycle latency
@@ -674,9 +676,9 @@ always_comb
   end
 
 assign instret_o = calc_stage_r[2].instr_v & ~exc_stage_n[3].poison_v;
-assign exception_pc_o = calc_stage_r[2].instr_metadata.pc;
+assign exception_pc_o = exc_stage_n[3].illegal_instr_v ? calc_stage_r[2].instr_metadata.pc : mem_badaddr_mem3;
 assign exception_instr_o = calc_stage_r[2].instr;
-assign exception_ecode_v_o = |exception_ecode_dec_o & calc_stage_r[2].pipe_mem_v & ~exc_stage_r[2].poison_v;
+assign exception_ecode_v_o = |exception_ecode_dec_o & ~exc_stage_r[2].poison_v;
 assign exception_ecode_dec_o = 
   bp_be_ecode_dec_s'{instr_misaligned : exc_stage_n[3].instr_misaligned_v
                      ,instr_fault     : mem_exception_mem3.instr_fault 

@@ -194,7 +194,7 @@ logic [num_cce_p-1:0] mem_data_cmd_v, mem_data_cmd_yumi;
             trace_replay
              (.clk_i(clk_i)
               ,.reset_i(reset_i)
-              ,.en_i(1'b1)
+              ,.en_i(1'b0)
 
               ,.v_i(tr_v_i[i])
               ,.data_i(tr_data_i[i])

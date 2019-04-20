@@ -42,7 +42,7 @@ module bp_be_mem_top
    // MMU                                                              
    , localparam mmu_cmd_width_lp  = `bp_be_mmu_cmd_width(vaddr_width_p)
    , localparam csr_cmd_width_lp  = `bp_be_csr_cmd_width
-   , localparam mem_resp_width_lp = `bp_be_mem_resp_width
+   , localparam mem_resp_width_lp = `bp_be_mem_resp_width(vaddr_width_p)
    , localparam vtag_width_lp     = (vaddr_width_p-bp_page_offset_width_gp)
    , localparam ptag_width_lp     = (paddr_width_p-bp_page_offset_width_gp)
    
@@ -177,8 +177,18 @@ logic                     translation_en_lo;
 
 /* Control signals */
 logic itlb_fill_cmd_v, itlb_fill_resp_v;
+logic [vaddr_width_p-1:0] badaddr;
 
 assign itlb_fill_cmd_v = mmu_cmd_v_i & (mmu_cmd.mem_op == e_ptw);
+
+always_ff @(posedge clk_i) begin
+  if(reset_i) begin
+    badaddr <= '0;
+  end
+  else if(mmu_cmd_v_i) begin
+    badaddr <= mmu_cmd.vaddr;
+  end
+end
 
 bp_be_csr
  #(.vaddr_width_p(vaddr_width_p)
@@ -239,7 +249,6 @@ bp_be_dtlb
    ,.w_vtag_i(dtlb_w_vtag)
    ,.w_entry_i(dtlb_w_entry)
    
-   ,.miss_clear_i(1'b0)
    ,.miss_v_o(dtlb_miss)
    ,.miss_vtag_o(dtlb_miss_vtag)
   );
@@ -382,6 +391,7 @@ always_ff @(posedge clk_i)
   dtlb_miss_r <= dtlb_miss;
 
 assign mem_resp.data                       = dcache_v ? dcache_data : csr_data_lo;
+assign mem_resp.badaddr                    = badaddr;
 assign mem_resp.exception.illegal_instr    = illegal_instr;
 assign mem_resp.exception.instr_fault      = 1'b0; // TODO: Fill in
 assign mem_resp.exception.load_fault       = 1'b0;
